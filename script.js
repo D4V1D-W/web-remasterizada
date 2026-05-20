@@ -62,82 +62,83 @@ document.addEventListener("DOMContentLoaded", function(){
 
     });
 
-
-
 // =========================
-// NARRADOR ACCESIBLE
+// CONTROL NARRADOR
 // =========================
 
 let voiceEnabled = false;
 
 const voiceToggle =
-    document.getElementById(
-        "voice-toggle"
-    );
+    document.getElementById("voice-toggle");
 
-// ACTIVAR / DESACTIVAR
+voiceToggle.addEventListener("click", function(){
 
-voiceToggle.addEventListener(
-    "click",
-    function(){
-
-        voiceEnabled = !voiceEnabled;
-
-        speechSynthesis.cancel();
-
-        if(voiceEnabled){
-
-            voiceToggle.innerText =
-                "🔊 Narrador Activado";
-
-        } else {
-
-            voiceToggle.innerText =
-                "🔇 Narrador Desactivado";
-
-        }
-
-    }
-);
-
-// ELEMENTOS LEIBLES
-
-const readableElements =
-    document.querySelectorAll(
-        "h1, h2, h3, p, a, button"
-    );
-
-// FUNCION DE VOZ
-
-function speakText(text){
-
-    if(!voiceEnabled) return;
+    voiceEnabled = !voiceEnabled;
 
     speechSynthesis.cancel();
 
-    const speech =
-        new SpeechSynthesisUtterance(text);
+    if(voiceEnabled){
 
-    speech.lang = "es-ES";
+        voiceToggle.innerText =
+            "🔊 Narrador Activado";
 
-    speech.rate = 1;
+        // DESBLOQUEAR AUDIO MOVIL
 
-    speech.pitch = 1;
+        speechSynthesis.speak(
+            new SpeechSynthesisUtterance("")
+        );
 
-    speech.volume = 1;
+    } else {
 
-    speechSynthesis.speak(speech);
+        voiceToggle.innerText =
+            "🔇 Narrador Desactivado";
+
+    }
+
+});
+
+// =========================
+// LECTOR DE TEXTO
+// =========================
+
+const readableElements =
+    document.querySelectorAll(
+        "h1, h2, h3, p, a, button, .card-content"
+    );
+
+// FUNCION LEER
+
+function speakText(texto){
+
+    if(!voiceEnabled) return;
+
+    if(texto.trim() === "") return;
+
+    speechSynthesis.cancel();
+
+    let voz =
+        new SpeechSynthesisUtterance(texto);
+
+    voz.lang = "es-ES";
+
+    voz.rate = 1;
+
+    voz.pitch = 1;
+
+    voz.volume = 1;
+
+    speechSynthesis.speak(voz);
 
 }
 
-// EVENTOS PARA PC Y MOVIL
+// =========================
+// PC
+// =========================
 
 readableElements.forEach(function(element){
 
-    // PC
-
     element.addEventListener(
-        "mouseenter",
+        "mouseover",
         function(){
 
             if(window.innerWidth > 768){
@@ -151,7 +152,13 @@ readableElements.forEach(function(element){
         }
     );
 
-    // CELULAR
+});
+
+// =========================
+// MOVIL
+// =========================
+
+readableElements.forEach(function(element){
 
     element.addEventListener(
         "touchstart",
@@ -169,45 +176,8 @@ readableElements.forEach(function(element){
     );
 
 });
-
-// =========================
-// LECTOR DE TEXTO
-// =========================
-
-const readableElements =
-    document.querySelectorAll(
-        "h1, h2, h3, p, a, .card-content"
-    );
-
-readableElements.forEach(function(element){
-
-    element.addEventListener("click", function(){
-
-        if(!voiceEnabled) return;
-
-        let texto = element.innerText;
-
-        if(texto.trim() !== ""){
-
-            speechSynthesis.cancel();
-
-            let voz =
-                new SpeechSynthesisUtterance(texto);
-
-            voz.lang = "es-ES";
-
-            voz.rate = 1;
-
-            voz.pitch = 1;
-
-            speechSynthesis.speak(voz);
-
-        }
-
-    });
-
 });
-});
+
 
 
 // =========================
