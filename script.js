@@ -63,32 +63,110 @@ document.addEventListener("DOMContentLoaded", function(){
     });
 
 
+
 // =========================
-// CONTROL NARRADOR
+// NARRADOR ACCESIBLE
 // =========================
 
-let voiceEnabled = true;
+let voiceEnabled = false;
 
 const voiceToggle =
-    document.getElementById("voice-toggle");
+    document.getElementById(
+        "voice-toggle"
+    );
 
-voiceToggle.addEventListener("click", function(){
+// ACTIVAR / DESACTIVAR
 
-    voiceEnabled = !voiceEnabled;
+voiceToggle.addEventListener(
+    "click",
+    function(){
+
+        voiceEnabled = !voiceEnabled;
+
+        speechSynthesis.cancel();
+
+        if(voiceEnabled){
+
+            voiceToggle.innerText =
+                "🔊 Narrador Activado";
+
+        } else {
+
+            voiceToggle.innerText =
+                "🔇 Narrador Desactivado";
+
+        }
+
+    }
+);
+
+// ELEMENTOS LEIBLES
+
+const readableElements =
+    document.querySelectorAll(
+        "h1, h2, h3, p, a, button"
+    );
+
+// FUNCION DE VOZ
+
+function speakText(text){
+
+    if(!voiceEnabled) return;
 
     speechSynthesis.cancel();
 
-    if(voiceEnabled){
+    const speech =
+        new SpeechSynthesisUtterance(text);
 
-        voiceToggle.innerText =
-            "🔊 Narrador Activado";
+    speech.lang = "es-ES";
 
-    } else {
+    speech.rate = 1;
 
-        voiceToggle.innerText =
-            "🔇 Narrador Desactivado";
+    speech.pitch = 1;
 
-    }
+    speech.volume = 1;
+
+    speechSynthesis.speak(speech);
+
+}
+
+// EVENTOS PARA PC Y MOVIL
+
+readableElements.forEach(function(element){
+
+    // PC
+
+    element.addEventListener(
+        "mouseenter",
+        function(){
+
+            if(window.innerWidth > 768){
+
+                speakText(
+                    element.innerText
+                );
+
+            }
+
+        }
+    );
+
+    // CELULAR
+
+    element.addEventListener(
+        "touchstart",
+        function(){
+
+            if(window.innerWidth <= 768){
+
+                speakText(
+                    element.innerText
+                );
+
+            }
+
+        }
+    );
 
 });
 
